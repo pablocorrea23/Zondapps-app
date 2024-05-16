@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: MyRouters.generateRoute,
       initialRoute: ROUTE_LOGIN,
       theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF52f4d7)),
           useMaterial3: true,
           appBarTheme:
               const AppBarTheme(iconTheme: IconThemeData(color: Colors.white))),

@@ -1,22 +1,42 @@
 // ignore_for_file: file_names, avoid_print
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:zondapps_flutter/Common/MyRouters.dart';
+//import 'package:zondapps_flutter/Common/MyRouters.dart';
+import 'package:http/http.dart' as http;
 
-class LoginForm extends StatefulWidget {
-  const LoginForm({super.key});
+class PostLoginScreen extends StatefulWidget {
+  const PostLoginScreen({super.key});
 
   @override
-  State<LoginForm> createState() => _LoginFormState();
+  _PostLoginScreenState createState() => _PostLoginScreenState();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class _PostLoginScreenState extends State<PostLoginScreen> {
   GlobalKey<FormState> formKey = GlobalKey();
-  TextEditingController ctrlEmail = TextEditingController();
-  TextEditingController ctrlPassword = TextEditingController();
-  String name = '';
-  FocusNode node1 = FocusNode();
-  FocusNode node2 = FocusNode();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordcontroller = TextEditingController();
+  bool hidePassword = true;
+  registerUser(String email, String password) async {
+    Uri url = Uri.parse("https://reqres.in/api/login");
+    var data = {
+      "email": email,
+      "password": password,
+    };
+    try {
+      var response = await http.post(url, body: data);
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        print(jsonData);
+        print("Login Successfully");
+      } else {
+        var error = jsonDecode(response.body);
+        print("Unable to Login: ${error['error']}");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +48,13 @@ class _LoginFormState extends State<LoginForm> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: TextFormField(
-              controller: ctrlEmail,
-              focusNode: node1,
+              controller: emailController,
               keyboardType: TextInputType.emailAddress,
               maxLines: 1,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
                 labelText: 'Email',
                 labelStyle: TextStyle(color: Colors.white),
-                // border: OutlineInputBorder(),
-                // focusedBorder: OutlineInputBorder(
-                //     borderSide: BorderSide(color: Colors.white))
               ),
               validator: (value) {
                 String pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
@@ -55,15 +71,25 @@ class _LoginFormState extends State<LoginForm> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: TextFormField(
-              controller: ctrlPassword,
-              focusNode: node2,
-              //keyboardType: TextInputType.text,
+              controller: passwordcontroller,
               maxLines: 1,
-              obscureText: true,
+              obscureText: hidePassword,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   labelText: 'Password',
-                  labelStyle: TextStyle(color: Colors.white)),
+                  labelStyle: const TextStyle(color: Colors.white),
+                  enabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white)),
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          hidePassword = !hidePassword;
+                        });
+                      },
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      icon: Icon(hidePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility))),
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Se necesita una constraseña';
@@ -83,12 +109,10 @@ class _LoginFormState extends State<LoginForm> {
             width: 200,
             child: ElevatedButton(
               onPressed: () {
-                save();
-                Navigator.pushNamed(context, ROUTE_HOME);
-                //FocusScope.of(context).requestFocus(node2);
-                setState(() {
-                  name = ctrlEmail.text.toString();
-                });
+                registerUser(emailController.text.toString(),
+                    passwordcontroller.text.toString());
+                //Navigator.pushNamed(context, ROUTE_HOME);
+                //setState(() {});
               },
               style: ButtonStyle(
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -118,13 +142,5 @@ class _LoginFormState extends State<LoginForm> {
         ],
       ),
     );
-  }
-
-  save() {
-    if (formKey.currentState!.validate()) {
-      print('Email: $ctrlEmail');
-      print('Password: $ctrlPassword');
-      formKey.currentState?.reset();
-    }
   }
 }

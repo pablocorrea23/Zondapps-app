@@ -29,13 +29,7 @@ class _LoginPageState extends State<LoginPage> {
               height: 150,
               width: 150,
             ),
-            // Image.asset(
-            //   'assets/images/LoginPage/logo2.png',
-            //   width: 150,
-            //   height: 150,
-            //   fit: BoxFit.contain,
-            // ),
-            const LoginForm()
+            const PostLoginScreen()
           ]),
         ),
       ),
