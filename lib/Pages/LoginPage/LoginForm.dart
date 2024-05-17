@@ -5,6 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zondapps_flutter/Common/MyRouters.dart';
 import 'package:http/http.dart' as http;
+import 'package:zondapps_flutter/Pages/Home/MyHomePage.dart';
+import 'package:zondapps_flutter/main.dart';
+
+void main() async {
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  var token = preferences.getString('token');
+  runApp(MaterialApp(
+    home: token == null ? const MyApp() : const MyHomePage(),
+  ));
+}
 
 class PostLoginScreen extends StatefulWidget {
   const PostLoginScreen({super.key});
@@ -25,6 +35,7 @@ class _PostLoginScreenState extends State<PostLoginScreen> {
         builder: (context) {
           return const Center(child: CircularProgressIndicator());
         });
+
     //definimos la api y los datos
     Uri url = Uri.parse("https://gestionapp.zondapps.com/api/login");
     var data = {
@@ -51,6 +62,7 @@ class _PostLoginScreenState extends State<PostLoginScreen> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
         //cierra SharedPreferences
+        print(prefs.getString('token'));
       } else {
         var error = jsonDecode(response.body);
         print("Unable to Login: ${error['error']}");
