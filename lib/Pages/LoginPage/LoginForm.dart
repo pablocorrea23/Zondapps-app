@@ -1,8 +1,9 @@
-// ignore_for_file: file_names, avoid_print
+// ignore_for_file: file_names, avoid_print, use_build_context_synchronously, library_private_types_in_public_api
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-//import 'package:zondapps_flutter/Common/MyRouters.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zondapps_flutter/Common/MyRouters.dart';
 import 'package:http/http.dart' as http;
 
 class PostLoginScreen extends StatefulWidget {
@@ -18,20 +19,56 @@ class _PostLoginScreenState extends State<PostLoginScreen> {
   TextEditingController passwordcontroller = TextEditingController();
   bool hidePassword = true;
   registerUser(String email, String password) async {
-    Uri url = Uri.parse("https://reqres.in/api/login");
+    //loading circle
+    showDialog(
+        context: context,
+        builder: (context) {
+          return const Center(child: CircularProgressIndicator());
+        });
+    //definimos la api y los datos
+    Uri url = Uri.parse("https://gestionapp.zondapps.com/api/login");
     var data = {
       "email": email,
       "password": password,
     };
+
+    //pop the loading circle
+    //Navigator.of(context).pop();
+
     try {
       var response = await http.post(url, body: data);
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
+        final token = jsonData['token'];
+
+        Navigator.pushNamed(context, ROUTE_HOME);
+
         print(jsonData);
+        print(jsonData['token']);
         print("Login Successfully");
+
+        //Almacenar el token en SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+        //cierra SharedPreferences
       } else {
         var error = jsonDecode(response.body);
         print("Unable to Login: ${error['error']}");
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Close'),
+                    )
+                  ],
+                  title: const Text('Login Error'),
+                  contentPadding: const EdgeInsets.all(20.0),
+                  content: const Text('Ingrese un Usuario correcto'),
+                ));
       }
     } catch (e) {
       print("Error: $e");
@@ -111,7 +148,7 @@ class _PostLoginScreenState extends State<PostLoginScreen> {
               onPressed: () {
                 registerUser(emailController.text.toString(),
                     passwordcontroller.text.toString());
-                //Navigator.pushNamed(context, ROUTE_HOME);
+
                 //setState(() {});
               },
               style: ButtonStyle(

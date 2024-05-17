@@ -1,10 +1,12 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, use_build_context_synchronously, avoid_print
 
 import 'package:flutter/material.dart';
 // ignore: unnecessary_import
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+//import 'package:zondapps_flutter/Common/MyRouters.dart';
 import 'package:zondapps_flutter/Pages/EmpresaPage.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -15,6 +17,25 @@ class Menu extends StatefulWidget {
 
 class _MenuState extends State<Menu> {
   @override
+  void initState() {
+    super.initState();
+    // checkToken();
+  }
+
+  // void checkToken() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final token = prefs.getString('token');
+
+  //   if (token == null) {
+  //     Navigator.pushReplacementNamed(context, ROUTE_LOGIN);
+  //     print('Token NULL');
+  //   } else {
+  //     Navigator.pushReplacementNamed(context, ROUTE_HOME);
+  //     print('Token Successfully');
+  //   }
+  // }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
@@ -23,10 +44,8 @@ class _MenuState extends State<Menu> {
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LaEmpresa()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const LaEmpresa()));
               },
               child: Container(
                 decoration: BoxDecoration(
