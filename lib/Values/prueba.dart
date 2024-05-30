@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -7,7 +9,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: Scaffold(
-        body: SafeArea(
+        body: const SafeArea(
           child: Text('Hi'),
         ),
         bottomNavigationBar: Container(
@@ -15,7 +17,7 @@ class MyApp extends StatelessWidget {
           color: Colors.black12,
           child: InkWell(
             onTap: () => print('tap on close'),
-            child: Padding(
+            child: const Padding(
               padding: EdgeInsets.only(top: 8.0),
               child: Column(
                 children: <Widget>[
